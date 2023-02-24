@@ -5,9 +5,25 @@ import (
   "log"
   "github.com/gorilla/mux"
   "net/http"
+  "os"
+  "github.com/joho/godotenv"
 )
 
+func init() {
+  err := godotenv.Load()
+  if err != nil {
+    defer func() {
+      log.Fatal("Error loading .env file")
+    }()
+    panic(err)
+  }
+}
+
 func main() {
+  PORT := os.Getenv("PORT")
+  // DB := os.Getenv("DB")
+
+  // Initialize gorilla router
   r := mux.NewRouter()
 
   // ROUTE WITH ANON HANDLER
@@ -15,8 +31,8 @@ func main() {
     fmt.Fprint(w, "Hello, World!")
   }).Methods("GET")
 
-  fmt.Println("Starting server on :8000 ...")
-  err := http.ListenAndServe(":8000", r)
+  fmt.Println(fmt.Sprintf("Starting server on port %s ...", PORT))
+  err := http.ListenAndServe(fmt.Sprintf(":%s", PORT), r)
   if err != nil {
     defer func() {
       log.Println("Hit deferred function, panicked out")
